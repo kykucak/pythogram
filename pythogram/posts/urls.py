@@ -14,5 +14,6 @@ router.register(r'posts', views.PostViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('posts/<str:pk>/like', views.like_post, name='like_post'),
-    path('posts/<str:pk>/unlike', views.unlike_post, name='unlike_post')
+    path('posts/<str:pk>/unlike', views.unlike_post, name='unlike_post'),
+    path('register/', views.RegistrationAPIView.as_view(), name='user_registration')
 ]

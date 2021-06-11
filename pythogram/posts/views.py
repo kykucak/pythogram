@@ -1,9 +1,11 @@
 from rest_framework.decorators import api_view
+from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework import permissions
 
 from .models import Post, Like
-from .serializers import PostSerializer
+from .serializers import PostSerializer, RegistrationSerializer, UserSerializer
 
 
 def like(user, post_pk):
@@ -52,3 +54,19 @@ def unlike_post(request, pk):
     unliked = unlike(request.user, pk)
 
     return Response({"success": f"{unliked}"})
+
+
+class RegistrationAPIView(generics.GenericAPIView):
+
+    serializer_class = RegistrationSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+        user = serializer.save()
+        return Response({
+            "message": "success",
+            "user": UserSerializer(user, context=self.get_serializer_context()).data
+        })
+
