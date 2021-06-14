@@ -41,7 +41,10 @@ def create_day(like_):
 def user_active(func):
     """Decorator, that tracks user activity"""
     def wrapper(*args, **kwargs):
-        user = args[0].user
+        try:
+            user = args[1].user
+        except IndexError:
+            user = args[0].user
         user.last_login = datetime.datetime.now()
         user.save()
         result = func(*args, **kwargs)
