@@ -25,7 +25,6 @@ class PostViewSet(ViewSet):
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
         return Response({
-            "message": "success",
             "user": PostSerializer(post, context={"request": request}).data
         })
 
@@ -65,9 +64,8 @@ class LikeAPIView(APIView):
 
     @user_active
     def delete(self, request, pk):
-        unliked = unlike(request.user, pk)
-        if unliked:
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        unlike(request.user, pk)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
@@ -75,13 +73,18 @@ class LikeAPIView(APIView):
 def get_analytics(request):
     """Returns analytics aggregated by day for a specified date range"""
     # split "2021-06-12" by "-", transform it to int and to date
-    date_from = str_date_to_date(request.GET.get('date_from'))
-    date_to = str_date_to_date(request.GET.get('date_to'))
+    try:
+        date_from = str_date_to_date(request.GET.get('date_from'))
+        date_to = str_date_to_date(request.GET.get('date_to'))
+    except TypeError:
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    except AttributeError:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
     likes = Like.objects.filter(date_created__range=[date_from, date_to]).order_by('date_created')
     days = aggregate_likes_by_day(list(likes))
 
     return Response({
-        "success": "True",
         "days": days
     })
 
@@ -96,6 +99,5 @@ class RegistrationAPIView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
-            "message": "success",
             "user": UserSerializer(user, context=self.get_serializer_context()).data
         })

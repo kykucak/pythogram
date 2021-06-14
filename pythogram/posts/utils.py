@@ -29,6 +29,7 @@ def unlike(user, post_pk):
 
 
 def create_day(like_):
+    """Returns day, filled with passed like"""
     like_serializer = LikeSerializer(instance=like_)
     day = {
         "date": like_.date_created,
@@ -49,12 +50,8 @@ def user_active(func):
     return wrapper
 
 
-def aggregate_likes_by_day(likes: list) -> list:
-    """
-    Aggregate like objects by day to return it
-    example:
-
-    """
+def aggregate_likes_by_day(likes):
+    """Aggregate like objects by day to return it"""
     days = []
     first = True
     for like_ in likes:
@@ -80,8 +77,6 @@ def aggregate_likes_by_day(likes: list) -> list:
 
 def str_date_to_date(date):
     """Transform "2021-08-15" date to date object"""
-    # try:
     new_date = datetime.date(*[int(d) for d in date.split('-')])
-    # except AttributeError:
-    #     return False
+
     return new_date
