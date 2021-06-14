@@ -7,7 +7,7 @@ class Post(models.Model):
     name = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
-    likes = models.ManyToManyField("Like", related_name="related_post", null=True)
+    likes = models.ManyToManyField("Like", related_name="related_post", blank=True)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -18,4 +18,9 @@ class Like(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="related_like")
-    date_created = models.DateTimeField(auto_now=True)
+    date_created = models.DateField(auto_now=True)
+
+#
+# class NewUser(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+

@@ -9,11 +9,12 @@ from rest_framework_simplejwt.views import (
 from . import views
 
 router = DefaultRouter()
-router.register(r'posts', views.PostViewSet)
+router.register(r'posts', views.PostViewSet, basename='post')
+router.register(r'users', views.UserViewSet, basename='user')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('posts/<str:pk>/like', views.like_post, name='like_post'),
-    path('posts/<str:pk>/unlike', views.unlike_post, name='unlike_post'),
-    path('register/', views.RegistrationAPIView.as_view(), name='user_registration')
+    path('register/', views.RegistrationAPIView.as_view(), name='user_registration'),
+    path('posts/<str:pk>/like/', views.LikeAPIView.as_view(), name='like'),
+    path('analytics/', views.get_analytics, name='analytics')
 ]
