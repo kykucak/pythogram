@@ -28,9 +28,9 @@ def unlike(user, post_pk):
     return True
 
 
-def create_day(like_):
+def create_day(like_, request):
     """Returns day, filled with passed like"""
-    like_serializer = LikeSerializer(instance=like_)
+    like_serializer = LikeSerializer(instance=like_, context={"request": request})
     day = {
         "date": like_.date_created,
         "likes_details": [like_serializer.data]
@@ -53,22 +53,22 @@ def user_active(func):
     return wrapper
 
 
-def aggregate_likes_by_day(likes):
+def aggregate_likes_by_day(likes, request):
     """Aggregate like objects by day to return it"""
     days = []
     first = True
     for like_ in likes:
         if first:
-            day = create_day(like_)
+            day = create_day(like_, request)
             first = False
             continue
 
         if like_.date_created != day["date"]:
             day["likes_total"] = len(day["likes_details"])
             days.append(day)
-            day = create_day(like_)
+            day = create_day(like_, request)
         else:
-            like_serializer = LikeSerializer(instance=like_)
+            like_serializer = LikeSerializer(instance=like_, context={"request": request})
             day["likes_details"].append(like_serializer.data)
 
         if likes.index(like_) == len(likes) - 1:

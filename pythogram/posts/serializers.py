@@ -4,17 +4,22 @@ from rest_framework import serializers
 from .models import Post, Like
 
 
-class PostSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Post
-        fields = '__all__'
-
-
 class LikeSerializer(serializers.ModelSerializer):
+
+    user = serializers.HyperlinkedIdentityField(view_name='user-detail')
+    post = serializers.HyperlinkedIdentityField(view_name='post-detail')
 
     class Meta:
         model = Like
+        fields = '__all__'
+
+
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+
+    likes = LikeSerializer(many=True)
+
+    class Meta:
+        model = Post
         fields = '__all__'
 
 

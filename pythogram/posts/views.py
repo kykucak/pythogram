@@ -16,7 +16,7 @@ class PostViewSet(ViewSet):
     @user_active
     def list(self, request):
         queryset = Post.objects.all()
-        serializer = PostSerializer(queryset, many=True)
+        serializer = PostSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
 
     @user_active
@@ -32,7 +32,7 @@ class PostViewSet(ViewSet):
     def retrieve(self, request, pk=None):
         queryset = Post.objects.all()
         post = get_object_or_404(queryset, pk=pk)
-        serializer = PostSerializer(post)
+        serializer = PostSerializer(post, context={"request": request})
         return Response(serializer.data)
 
 
@@ -41,14 +41,14 @@ class UserViewSet(ViewSet):
     @user_active
     def list(self, request):
         queryset = User.objects.all()
-        serializer = UserAccountSerializer(queryset, many=True)
+        serializer = UserAccountSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
 
     @user_active
     def retrieve(self, request, pk=None):
         queryset = User.objects.all()
         user = get_object_or_404(queryset, pk=pk)
-        serializer = UserAccountSerializer(user)
+        serializer = UserAccountSerializer(user, context={"request": request})
         return Response(serializer.data)
 
 
@@ -82,7 +82,7 @@ def get_analytics(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     likes = Like.objects.filter(date_created__range=[date_from, date_to]).order_by('date_created')
-    days = aggregate_likes_by_day(list(likes))
+    days = aggregate_likes_by_day(list(likes), request)
 
     return Response({
         "days": days
